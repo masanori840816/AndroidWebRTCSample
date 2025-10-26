@@ -1,6 +1,5 @@
 using UnityEngine;
 using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Net.Http;
 using System.Threading;
@@ -29,10 +28,8 @@ public class WebAccessor: IDisposable
                 using (var stream = await response.Content.ReadAsStreamAsync())
                 using (var reader = new StreamReader(stream, Encoding.UTF8))
                 {
-                    // ストリームが閉じられるまで一行ずつ読み続ける
                     while (!reader.EndOfStream && !cancellationToken.IsCancellationRequested)
                     {
-                        // 非同期で一行読み込む
                         string line = await reader.ReadLineAsync();
                         if (string.IsNullOrEmpty(line))
                         {

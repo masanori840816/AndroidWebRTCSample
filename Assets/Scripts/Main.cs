@@ -1,5 +1,6 @@
 using UnityEngine;
 using System.Threading;
+using System.Threading.Tasks;
 
 public class Main : MonoBehaviour
 {
@@ -8,8 +9,11 @@ public class Main : MonoBehaviour
     private void Start()
     {
         webAccessor = new WebAccessor();
-        CancellationTokenSource cts = new CancellationTokenSource();
-        webAccessor.ConnectAsync("http://localhost:8080", "example", cts.Token);
+        Task.Run(() =>
+        {
+            CancellationTokenSource cts = new CancellationTokenSource();
+            webAccessor.ConnectAsync("http://localhost:8080", "example", cts.Token);
+        });
     }
 
     // Update is called once per frame
