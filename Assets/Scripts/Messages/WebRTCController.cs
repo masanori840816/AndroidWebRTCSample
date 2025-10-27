@@ -58,8 +58,6 @@ public class WebRTCController
             Debug.LogError($"Failed to set remote Offer: {setRemoteOp.Error.message}");
             return;
         }
-
-        // 2. Answerを生成
         RTCSessionDescriptionAsyncOperation createAnswerOp = _peerConnection.CreateAnswer();
         while (!createAnswerOp.IsDone)
         {

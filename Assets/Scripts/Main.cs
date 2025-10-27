@@ -23,11 +23,11 @@ public class Main : MonoBehaviour
         SynchronizationContext mainContext = SynchronizationContext.Current;
         _webAccessor = new WebAccessor();
         _webrtcCtrl = new WebRTCController();
-        _webrtcCtrl.OnLocalDescriptionCreated += (desc) => {
-            Debug.Log($"LAns: {JsonUtility.ToJson(desc)}");
+        _webrtcCtrl.OnLocalDescriptionCreated += async (desc) => {
+            await _webAccessor.PostAsync("http://localhost:8080", desc);
         };
-        _webrtcCtrl.OnIceCandidateCreated += (candidate) => {
-            Debug.Log($"LCandiJson: {JsonUtility.ToJson(candidate)}");
+        _webrtcCtrl.OnIceCandidateCreated += async (candidate) => {
+            await _webAccessor.PostAsync("http://localhost:8080", candidate);
         };
 
         _webAccessor.OnMessage = (message) => {

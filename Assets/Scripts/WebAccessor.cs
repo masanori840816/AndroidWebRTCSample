@@ -53,7 +53,28 @@ public class WebAccessor: IDisposable
             Debug.LogError($"Exception: {e.Message}");
         }
     }
+    public async Task PostAsync(string baseUrl, ClientMessage message)
+    {
+        string jsonValue = JsonUtility.ToJson(message);
+        var content = new StringContent(
+            jsonValue,
+            Encoding.UTF8,
+            "application/json"
+        );
+        try
+        {
+            string url = $"{baseUrl}/sse/message";
+            HttpResponseMessage response = await httpClient.PostAsync(url, content);
 
+            response.EnsureSuccessStatusCode(); 
+            string responseBody = await response.Content.ReadAsStringAsync();
+            Debug.Log($"Status: {response.StatusCode} body: {responseBody}");
+        }
+        catch (HttpRequestException e)
+        {
+            Debug.Log($"[PostAsync]: {e.Message}");
+        }
+    }
     public void Dispose()
     {
         this.httpClient?.Dispose();
