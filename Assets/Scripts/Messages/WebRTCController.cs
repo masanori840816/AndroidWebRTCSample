@@ -10,12 +10,6 @@ using Unity.WebRTC;
 public class WebRTCController
 {
     private RTCPeerConnection _peerConnection = null;
-    private List<RTCRtpSender> pc1Senders;
-    private VideoStreamTrack videoStreamTrack;
-    private AudioStreamTrack audioStreamTrack;
-    private MediaStream receiveAudioStream;
-    private MediaStream receiveVideoStream;
-    private WebCamTexture webCamTexture;
     public event Action<ClientMessage> OnLocalDescriptionCreated;
     public event Action<ClientMessage> OnIceCandidateCreated;
 
@@ -47,7 +41,6 @@ public class WebRTCController
         if (_peerConnection != null)
         {
             _peerConnection.AddTrack(track, stream);
-            Debug.Log($"Local track added: {track.Kind}");
         }
     }
     public async void OnOfferReceived(RTCSessionDescription offer)
@@ -91,17 +84,11 @@ public class WebRTCController
     }
     public void OnCandidateReceived(RTCIceCandidate candidate)
     {
-        Debug.Log($"OnCandidateReceived PC? {(_peerConnection == null)}");
         if (_peerConnection == null) return;
-        
-        // ICE Candidateを追加
         _peerConnection.AddIceCandidate(candidate);
-        Debug.Log($"Added remote ICE Candidate: {candidate.Candidate}");
     }
     private async Task SetAndSignalLocalDescription(RTCSessionDescription desc)
     {
-        Debug.Log("SetAndSignalLocalDescription");
-        // 1. ローカルのSDPを設定
         RTCSetSessionDescriptionAsyncOperation setLocalOp = _peerConnection.SetLocalDescription(ref desc);
         while (!setLocalOp.IsDone)
         {
@@ -113,20 +100,15 @@ public class WebRTCController
             Debug.LogError($"Failed to set local description: {setLocalOp.Error.message}");
             return;
         }
-
-        // 2. シグナリングサーバーへ送信するためのイベントを発火
         OnLocalDescriptionCreated?.Invoke(GenerateAnswerMessage(desc));
         Debug.Log($"Set local {desc.type} and signaled to server.");
     }
-    // ICE Candidateが生成された時に呼ばれる
     private void HandleIceCandidate(RTCIceCandidate candidate)
     {
-        // シグナリングサーバーへ送信するためのイベントを発火
         OnIceCandidateCreated?.Invoke(GenerateCandidateMessage(candidate));
         Debug.Log($"Generated local ICE Candidate and signaled: {candidate.Candidate}");
     }
 
-    // 接続状態が変化した時に呼ばれる
     private void HandleConnectionStateChange(RTCPeerConnectionState state)
     {
         Debug.Log($"Connection State Changed: {state}");
@@ -136,7 +118,6 @@ public class WebRTCController
         }
     }
 
-    // リモートピアからトラック（メディアストリーム）が追加された時に呼ばれる
     private void HandleTrackEvent(RTCTrackEvent e)
     {
         MediaStream remoteStream = e.Streams.FirstOrDefault();

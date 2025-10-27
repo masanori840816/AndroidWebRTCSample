@@ -8,6 +8,9 @@
 .utmp
 /Assets/Textures/slides
 
+_Recovery
+_Recovery.meta
+
 ### Unity ###
 # This .gitignore file should be placed at the root of your Unity project directory
 #

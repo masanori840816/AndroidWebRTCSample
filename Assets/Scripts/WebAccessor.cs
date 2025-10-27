@@ -35,7 +35,6 @@ public class WebAccessor: IDisposable
                         string line = await reader.ReadLineAsync();
                         if (string.IsNullOrEmpty(line) == false)
                         {
-                            Debug.Log("Get messages" + line);
                             mainContext.Post(_ => {
                                 OnMessage?.Invoke(line);
                             }, null);
